@@ -2,7 +2,7 @@ extends PlayerState
 
 func enter(msg := {}) -> void:
 	player.animation_player.speed_scale = 1
-	player.animation_player.play()
+	player.animation_player.play("float")
 	
 	
 func update(delta: float) -> void:
@@ -10,6 +10,10 @@ func update(delta: float) -> void:
 	
 	if Input.is_action_just_pressed("jump"):
 		state_machine.transition_to("Jump")
+		return
+		
+	if Input.is_action_just_pressed("attack"):
+		state_machine.transition_to("Attack")
 		return
 		
 	if not player.is_on_floor():

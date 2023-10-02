@@ -14,6 +14,7 @@ var target_velocity := Vector3.ZERO
 
 @onready var spring_arm: SpringArm3D = $SpringArm3D
 @onready var pivot: Node3D = $Pivot
+@onready var particle_system: GPUParticles3D = $Pivot/ParticleSystem
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 func get_move_direction() -> Vector3:

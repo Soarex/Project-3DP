@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://drli4bt2e1otf"]
+[gd_scene load_steps=18 format=3 uid="uid://drli4bt2e1otf"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_r8724"]
 [ext_resource type="PackedScene" uid="uid://bmrvopbi3bgo6" path="res://art/player.glb" id="2_3f344"]
@@ -8,6 +8,27 @@
 [ext_resource type="Script" path="res://scripts/player/run_state.gd" id="6_er2wf"]
 [ext_resource type="Script" path="res://scripts/player/fall_state.gd" id="6_x7imq"]
 [ext_resource type="Script" path="res://scripts/player/jump_state.gd" id="7_3u15a"]
+[ext_resource type="Script" path="res://scripts/player/attack_state.gd" id="9_iyvyw"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_mmxqr"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 0.705
+emission_ring_radius = 0.63
+emission_ring_inner_radius = 0.0
+spread = 15.0
+flatness = 1.0
+initial_velocity_min = 1.0
+initial_velocity_max = 3.0
+damping_min = 5.0
+damping_max = 10.0
+angle_min = -120.0
+angle_max = 120.0
+scale_min = 0.1
+scale_max = 0.5
+attractor_interaction_enabled = false
+
+[sub_resource type="SphereMesh" id="SphereMesh_ovtyc"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_757lr"]
 radius = 0.8
@@ -72,9 +93,53 @@ tracks/1/keys = {
 "values": [Vector3(0, 0, 0), Vector3(0.139626, 0, 0), Vector3(-0.15708, 0, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_jjy1s"]
+resource_name = "attack"
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.599302),
+"transitions": PackedFloat32Array(3.36358, 1, 0.129408),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0.5, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/Character:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.402834, 0.5, 0.6),
+"transitions": PackedFloat32Array(0.241484, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 6.28319), Vector3(0, 0, 0), Vector3(0, 0, 6.28319), Vector3(0, 0, 0), Vector3(0, 0, 6.28319), Vector3(0, 0, 0)]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("StateMachine/Attack")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.6),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_on_attack_end"
+}]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sd4ns"]
 _data = {
 "RESET": SubResource("Animation_7n2pg"),
+"attack": SubResource("Animation_jjy1s"),
 "float": SubResource("Animation_y1jg1")
 }
 
@@ -86,6 +151,13 @@ script = ExtResource("1_r8724")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16337, 0)
 
 [node name="Character" parent="Pivot" instance=ExtResource("2_3f344")]
+
+[node name="ParticleSystem" type="GPUParticles3D" parent="Pivot"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0.326525, 0.945189, -1.42729e-08, 0.945189, -0.326525, -4.13155e-08, 0.124125, 0.0601297, 1.25451)
+emitting = false
+amount = 30
+process_material = SubResource("ParticleProcessMaterial_mmxqr")
+draw_pass_1 = SubResource("SphereMesh_ovtyc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.802438, 0)
@@ -131,5 +203,8 @@ script = ExtResource("7_3u15a")
 
 [node name="Run" type="Node" parent="StateMachine"]
 script = ExtResource("6_er2wf")
+
+[node name="Attack" type="Node" parent="StateMachine"]
+script = ExtResource("9_iyvyw")
 
 [connection signal="body_entered" from="MobDetector" to="." method="_on_mob_detector_body_entered"]
