@@ -1,0 +1,135 @@
+[gd_scene load_steps=14 format=3 uid="uid://drli4bt2e1otf"]
+
+[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_r8724"]
+[ext_resource type="PackedScene" uid="uid://bmrvopbi3bgo6" path="res://art/player.glb" id="2_3f344"]
+[ext_resource type="Script" path="res://scripts/player/spring_arm.gd" id="3_v5135"]
+[ext_resource type="Script" path="res://scripts/state_machine/state_machine.gd" id="4_sltfi"]
+[ext_resource type="Script" path="res://scripts/player/idle_state.gd" id="5_kwr1y"]
+[ext_resource type="Script" path="res://scripts/player/run_state.gd" id="6_er2wf"]
+[ext_resource type="Script" path="res://scripts/player/fall_state.gd" id="6_x7imq"]
+[ext_resource type="Script" path="res://scripts/player/jump_state.gd" id="7_3u15a"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_757lr"]
+radius = 0.8
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_hqwyp"]
+height = 0.268862
+radius = 0.838788
+
+[sub_resource type="Animation" id="Animation_7n2pg"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/Character:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_y1jg1"]
+resource_name = "float"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.3, 0.7, 1.2),
+"transitions": PackedFloat32Array(0.406126, 2.07053, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0.65, 0), Vector3(0, 0.35, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/Character:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.1, 0.5, 1.2),
+"transitions": PackedFloat32Array(0.406126, 0.406126, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.139626, 0, 0), Vector3(-0.15708, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_sd4ns"]
+_data = {
+"RESET": SubResource("Animation_7n2pg"),
+"float": SubResource("Animation_y1jg1")
+}
+
+[node name="Player" type="CharacterBody3D"]
+collision_mask = 6
+script = ExtResource("1_r8724")
+
+[node name="Pivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16337, 0)
+
+[node name="Character" parent="Pivot" instance=ExtResource("2_3f344")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.802438, 0)
+shape = SubResource("SphereShape3D_757lr")
+
+[node name="MobDetector" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MobDetector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.558149, 0)
+shape = SubResource("CylinderShape3D_hqwyp")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "float"
+libraries = {
+"": SubResource("AnimationLibrary_sd4ns")
+}
+
+[node name="SpringArm3D" type="SpringArm3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0)
+collision_mask = 0
+spring_length = 10.0
+margin = 0.1
+script = ExtResource("3_v5135")
+
+[node name="Camera3D" type="Camera3D" parent="SpringArm3D"]
+current = true
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("4_sltfi")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("5_kwr1y")
+
+[node name="Fall" type="Node" parent="StateMachine"]
+script = ExtResource("6_x7imq")
+
+[node name="Jump" type="Node" parent="StateMachine"]
+script = ExtResource("7_3u15a")
+
+[node name="Run" type="Node" parent="StateMachine"]
+script = ExtResource("6_er2wf")
+
+[connection signal="body_entered" from="MobDetector" to="." method="_on_mob_detector_body_entered"]

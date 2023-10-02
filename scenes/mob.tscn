@@ -1,0 +1,96 @@
+[gd_scene load_steps=6 format=3 uid="uid://bp6xpjnbdaltl"]
+
+[ext_resource type="PackedScene" uid="uid://cujnkkwfg281c" path="res://art/mob.glb" id="1_cujbc"]
+
+[sub_resource type="GDScript" id="GDScript_m1jvp"]
+script/source = "extends CharacterBody3D
+
+signal squashed
+
+@export var min_speed = 10
+@export var max_speed = 18
+
+func initialize(start_position, player_position):
+	look_at_from_position(start_position, player_position, Vector3.UP)
+	rotate_y(randf_range(-PI / 4, PI / 4))
+	
+	var random_speed = randi_range(min_speed, max_speed)
+	$AnimationPlayer.speed_scale = random_speed / min_speed
+	
+	velocity = Vector3.FORWARD * random_speed
+	velocity = velocity.rotated(Vector3.UP, rotation.y)
+	
+	
+func squash():
+	squashed.emit()
+	queue_free()
+
+func _physics_process(_delta):
+	move_and_slide()
+
+func _on_visible_on_screen_notifier_3d_screen_exited():
+	queue_free()
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qahiq"]
+size = Vector3(1.84201, 0.805425, 1.609)
+
+[sub_resource type="Animation" id="Animation_wxxyn"]
+resource_name = "float"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.3, 0.7, 1.2),
+"transitions": PackedFloat32Array(0.406126, 2.07053, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0.65, 0), Vector3(0, 0.35, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/Character:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.1, 0.5, 1.2),
+"transitions": PackedFloat32Array(0.406126, 0.406126, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.139626, 0, 0), Vector3(-0.15708, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_opbnj"]
+_data = {
+"float": SubResource("Animation_wxxyn")
+}
+
+[node name="Mob" type="CharacterBody3D" groups=["mob"]]
+collision_layer = 2
+collision_mask = 0
+script = SubResource("GDScript_m1jvp")
+
+[node name="Pivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0299776, 0)
+
+[node name="Character" parent="Pivot" instance=ExtResource("1_cujbc")]
+transform = Transform3D(1, 0, 0, 0, 0.990268, -0.139173, 0, 0.139173, 0.990268, 0, 0.65, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.388711, 0)
+shape = SubResource("BoxShape3D_qahiq")
+
+[node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.396639)
+aabb = AABB(-1.28743, -1, -1.84609, 2.57486, 2, 3.69217)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "float"
+libraries = {
+"": SubResource("AnimationLibrary_opbnj")
+}
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier3D" to="." method="_on_visible_on_screen_notifier_3d_screen_exited"]

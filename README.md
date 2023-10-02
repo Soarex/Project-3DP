@@ -1,2 +1,2 @@
 # Project-3DP
-3D Platformer game made in Unity
+3D Platformer game made in Godot
