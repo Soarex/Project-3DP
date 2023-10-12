@@ -1,40 +1,6 @@
-[gd_scene load_steps=18 format=3 uid="uid://coow86asiliko"]
+[gd_scene load_steps=10 format=3 uid="uid://coow86asiliko"]
 
-[ext_resource type="PackedScene" uid="uid://bp6xpjnbdaltl" path="res://scenes/mob.tscn" id="1_tsjxx"]
 [ext_resource type="PackedScene" uid="uid://drli4bt2e1otf" path="res://scenes/player.tscn" id="2_ulo2l"]
-[ext_resource type="FontFile" uid="uid://dvedfn00hdoje" path="res://fonts/Montserrat-Medium.ttf" id="3_cjwq4"]
-[ext_resource type="Script" path="res://scripts/score_label.gd" id="4_e7yco"]
-
-[sub_resource type="GDScript" id="GDScript_oqpf4"]
-script/source = "extends Node
-
-@export var mob_scene: PackedScene
-
-func _ready():
-	$UserInterface/Retry.hide()
-
-func _on_mob_timer_timeout():
-	var mob = mob_scene.instantiate()
-	
-	var mob_spawn_location = get_node(\"SpawnPath/SpawnLocation\")
-	mob_spawn_location.progress_ratio = randf()
-
-	var player_position = $Player.position
-	mob.initialize(mob_spawn_location.position, player_position)
-	
-	mob.squashed.connect($UserInterface/ScoreLabel._on_mob_squashed.bind())
-	
-	add_child(mob)
-
-
-func _on_player_hit():
-	$MobTimer.stop()
-	$UserInterface/Retry.show()
-	
-func _unhandled_input(event):
-	if event.is_action_pressed(\"ui_accept\") and $UserInterface/Retry.visible:
-		get_tree().reload_current_scene()
-"
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vfo0n"]
 size = Vector3(60, 2, 60)
@@ -44,22 +10,6 @@ size = Vector3(60, 2, 60)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_culjx"]
 albedo_color = Color(0.101961, 0.431373, 0.109804, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_fbcb1"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n87df"]
-albedo_color = Color(1, 0.45098, 0, 1)
-
-[sub_resource type="Curve3D" id="Curve3D_2d8rn"]
-_data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -12.9825, 0, 15.0073, 0, 0, 0, 0, 0, 0, 12.3718, 0, 14.4335, 0, 0, 0, 0, 0, 0, 12.1627, 0, -14.5313, 0, 0, 0, 0, 0, 0, -13.2048, 0, -14.7418, 0, 0, 0, 0, 0, 0, -12.9825, 0, 15.0073),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
-}
-point_count = 5
-
-[sub_resource type="Theme" id="Theme_3c156"]
-default_font = ExtResource("3_cjwq4")
-default_font_size = 22
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_f4puh"]
 sky_top_color = Color(0.243137, 0.45098, 0.721569, 1)
@@ -85,10 +35,9 @@ volumetric_fog_density = 0.01
 [sub_resource type="BoxMesh" id="BoxMesh_je572"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_jhs6n"]
+size = Vector3(9.674, 0.667, 10.386)
 
 [node name="Main" type="Node"]
-script = SubResource("GDScript_oqpf4")
-mob_scene = ExtResource("1_tsjxx")
 
 [node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -110,93 +59,19 @@ shadow_enabled = true
 [node name="Player" parent="." instance=ExtResource("2_ulo2l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.623033, 0)
 
-[node name="Cylinders" type="Node3D" parent="."]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Cylinders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9855, 0, -14.4194)
-mesh = SubResource("CylinderMesh_fbcb1")
-surface_material_override/0 = SubResource("StandardMaterial3D_n87df")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="Cylinders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9855, 0, 14.9581)
-mesh = SubResource("CylinderMesh_fbcb1")
-surface_material_override/0 = SubResource("StandardMaterial3D_n87df")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Cylinders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.2685, 0, -14.4194)
-mesh = SubResource("CylinderMesh_fbcb1")
-surface_material_override/0 = SubResource("StandardMaterial3D_n87df")
-
-[node name="MeshInstance3D4" type="MeshInstance3D" parent="Cylinders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.268, 0, 15.358)
-mesh = SubResource("CylinderMesh_fbcb1")
-surface_material_override/0 = SubResource("StandardMaterial3D_n87df")
-
-[node name="SpawnPath" type="Path3D" parent="."]
-curve = SubResource("Curve3D_2d8rn")
-
-[node name="SpawnLocation" type="PathFollow3D" parent="SpawnPath"]
-transform = Transform3D(0.0226255, 0, -0.999744, 0, 1, 0, 0.999744, 0, 0.0226255, -12.9825, 0, 15.0073)
-
-[node name="MobTimer" type="Timer" parent="."]
-wait_time = 0.5
-
-[node name="UserInterface" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme = SubResource("Theme_3c156")
-
-[node name="ScoreLabel" type="Label" parent="UserInterface"]
-layout_mode = 0
-offset_left = 61.0
-offset_top = 51.0
-offset_right = 122.0
-offset_bottom = 77.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Score: 0"
-script = ExtResource("4_e7yco")
-
-[node name="Retry" type="ColorRect" parent="UserInterface"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.196078)
-
-[node name="Label" type="Label" parent="UserInterface/Retry"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -14.0
-offset_right = 20.0
-offset_bottom = 14.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Press Enter to retry"
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_8w50i")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(7.95425, 0, 0, 0, 0.980317, 0, 0, 0, 12.5877, 17.2765, 0.327889, -22.4119)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.2765, 0.327889, -22.4119)
 collision_layer = 4
 collision_mask = 0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(9.67389, 0, 0, 0, 0.666551, 0, 0, 0, 10.3859, 0, 0, 0)
 mesh = SubResource("BoxMesh_je572")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
 shape = SubResource("BoxShape3D_jhs6n")
 
 [connection signal="hit" from="Player" to="." method="_on_player_hit"]
-[connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]
