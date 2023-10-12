@@ -1,6 +1,7 @@
 extends PlayerState
 
 func enter(msg = {}) -> void:
+	player.input.attack_requested = false
 	player.animation_player.speed_scale = 1
 	player.animation_player.play("attack")
 

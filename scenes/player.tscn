@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://drli4bt2e1otf"]
+[gd_scene load_steps=19 format=3 uid="uid://drli4bt2e1otf"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_r8724"]
 [ext_resource type="PackedScene" uid="uid://bmrvopbi3bgo6" path="res://art/player.glb" id="2_3f344"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/player/fall_state.gd" id="6_x7imq"]
 [ext_resource type="Script" path="res://scripts/player/jump_state.gd" id="7_3u15a"]
 [ext_resource type="Script" path="res://scripts/player/attack_state.gd" id="9_iyvyw"]
+[ext_resource type="Script" path="res://scripts/player/player_character_input.gd" id="10_mf0wt"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_mmxqr"]
 emission_shape = 6
@@ -64,35 +65,6 @@ tracks/1/keys = {
 "values": [Vector3(0, 0, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_y1jg1"]
-resource_name = "float"
-length = 1.2
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Pivot/Character:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0.3, 0.7, 1.2),
-"transitions": PackedFloat32Array(0.406126, 2.07053, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0.65, 0), Vector3(0, 0.35, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Pivot/Character:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.1, 0.5, 1.2),
-"transitions": PackedFloat32Array(0.406126, 0.406126, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0.139626, 0, 0), Vector3(-0.15708, 0, 0)]
-}
-
 [sub_resource type="Animation" id="Animation_jjy1s"]
 resource_name = "attack"
 length = 0.6
@@ -134,6 +106,35 @@ tracks/2/keys = {
 "args": [],
 "method": &"_on_attack_end"
 }]
+}
+
+[sub_resource type="Animation" id="Animation_y1jg1"]
+resource_name = "float"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/Character:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.3, 0.7, 1.2),
+"transitions": PackedFloat32Array(0.406126, 2.07053, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0.65, 0), Vector3(0, 0.35, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/Character:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.1, 0.5, 1.2),
+"transitions": PackedFloat32Array(0.406126, 0.406126, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.139626, 0, 0), Vector3(-0.15708, 0, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sd4ns"]
@@ -206,5 +207,8 @@ script = ExtResource("6_er2wf")
 
 [node name="Attack" type="Node" parent="StateMachine"]
 script = ExtResource("9_iyvyw")
+
+[node name="PlayerCharacterInput" type="Node" parent="."]
+script = ExtResource("10_mf0wt")
 
 [connection signal="body_entered" from="MobDetector" to="." method="_on_mob_detector_body_entered"]

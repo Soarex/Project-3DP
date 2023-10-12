@@ -1,7 +1,23 @@
 extends PlayerState
 
+func check_transitions() -> bool:
+	if player.is_on_floor():
+		state_machine.transition_to("Idle")
+		return true
+		
+	if player.input.attack_requested:
+		state_machine.transition_to("Attack")
+		return true
+		
+	return false
+
+
 func enter(msg = {}) -> void:
 	player.animation_player.stop()
+	
+	
+func exit() -> void:
+	player.input.jump_requested = false
 
 
 func update(delta: float) -> void:
@@ -9,12 +25,7 @@ func update(delta: float) -> void:
 
 
 func physics_update(delta: float) -> void:
-	if player.is_on_floor():
-		state_machine.transition_to("Idle")
-		return
-		
-	if Input.is_action_just_pressed("attack"):
-		state_machine.transition_to("Attack")
+	if check_transitions():
 		return
 	
 	player.target_velocity.y = player.target_velocity.y - (player.fall_acceleration * delta)
@@ -23,10 +34,12 @@ func physics_update(delta: float) -> void:
 	
 	if direction == Vector3.ZERO:
 		return
-		
-	if Input.is_action_pressed("sprint"):
-		player.target_velocity.x = direction.x * player.sprint_speed
-		player.target_velocity.z = direction.z * player.sprint_speed
+	
+	var speed := 0.0
+	if player.input.sprinting:
+		speed = player.sprint_speed
 	else:
-		player.target_velocity.x = direction.x * player.speed
-		player.target_velocity.z = direction.z * player.speed
+		speed = player.speed
+		
+	player.target_velocity.x = direction.x * player.input.input_magnitude * speed
+	player.target_velocity.z = direction.z * player.input.input_magnitude * speed

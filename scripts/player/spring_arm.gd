@@ -7,7 +7,7 @@ func _ready() -> void:
 	top_level = true
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	rotation_degrees.x -= (Input.get_action_strength("camera_down") - Input.get_action_strength("camera_up")) * controller_sensitivity
 	rotation_degrees.x = clamp(rotation_degrees.x, -60, -5)
 	
