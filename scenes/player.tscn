@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://drli4bt2e1otf"]
+[gd_scene load_steps=17 format=3 uid="uid://drli4bt2e1otf"]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_r8724"]
 [ext_resource type="PackedScene" uid="uid://bmrvopbi3bgo6" path="res://art/player.glb" id="2_3f344"]
@@ -34,10 +34,6 @@ attractor_interaction_enabled = false
 [sub_resource type="SphereShape3D" id="SphereShape3D_757lr"]
 radius = 0.8
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_hqwyp"]
-height = 0.268862
-radius = 0.838788
-
 [sub_resource type="Animation" id="Animation_7n2pg"]
 length = 0.001
 tracks/0/type = "value"
@@ -63,49 +59,6 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector3(0, 0, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_jjy1s"]
-resource_name = "attack"
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Pivot/Character:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.599302),
-"transitions": PackedFloat32Array(3.36358, 1, 0.129408),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0.5, 0), Vector3(0, 0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Pivot/Character:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.402834, 0.5, 0.6),
-"transitions": PackedFloat32Array(0.241484, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0, 6.28319), Vector3(0, 0, 0), Vector3(0, 0, 6.28319), Vector3(0, 0, 0), Vector3(0, 0, 6.28319), Vector3(0, 0, 0)]
-}
-tracks/2/type = "method"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("StateMachine/Attack")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0.6),
-"transitions": PackedFloat32Array(1),
-"values": [{
-"args": [],
-"method": &"_on_attack_end"
-}]
 }
 
 [sub_resource type="Animation" id="Animation_y1jg1"]
@@ -140,7 +93,6 @@ tracks/1/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_sd4ns"]
 _data = {
 "RESET": SubResource("Animation_7n2pg"),
-"attack": SubResource("Animation_jjy1s"),
 "float": SubResource("Animation_y1jg1")
 }
 
@@ -160,34 +112,9 @@ amount = 30
 process_material = SubResource("ParticleProcessMaterial_mmxqr")
 draw_pass_1 = SubResource("SphereMesh_ovtyc")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CharacterShape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.802438, 0)
 shape = SubResource("SphereShape3D_757lr")
-
-[node name="MobDetector" type="Area3D" parent="."]
-collision_layer = 0
-collision_mask = 2
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MobDetector"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.558149, 0)
-shape = SubResource("CylinderShape3D_hqwyp")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-autoplay = "float"
-libraries = {
-"": SubResource("AnimationLibrary_sd4ns")
-}
-
-[node name="SpringArm3D" type="SpringArm3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0)
-collision_mask = 0
-spring_length = 10.0
-margin = 0.1
-script = ExtResource("3_v5135")
-
-[node name="Camera3D" type="Camera3D" parent="SpringArm3D"]
-current = true
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("4_sltfi")
@@ -211,4 +138,18 @@ script = ExtResource("9_iyvyw")
 [node name="PlayerCharacterInput" type="Node" parent="."]
 script = ExtResource("10_mf0wt")
 
-[connection signal="body_entered" from="MobDetector" to="." method="_on_mob_detector_body_entered"]
+[node name="CameraSpringArm" type="SpringArm3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0)
+collision_mask = 0
+spring_length = 10.0
+margin = 0.1
+script = ExtResource("3_v5135")
+
+[node name="Camera" type="Camera3D" parent="CameraSpringArm"]
+current = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "float"
+libraries = {
+"": SubResource("AnimationLibrary_sd4ns")
+}

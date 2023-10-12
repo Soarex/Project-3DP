@@ -30,7 +30,7 @@ func physics_update(delta: float) -> void:
 	
 	player.target_velocity.y = player.target_velocity.y - (player.fall_acceleration * delta)
 	
-	var direction = player.get_move_direction()
+	var direction = player.get_camera_space_direction()
 	
 	if direction == Vector3.ZERO:
 		return

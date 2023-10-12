@@ -33,7 +33,7 @@ func physics_update(delta: float) -> void:
 	if check_transitions():
 		return
 		
-	var direction = player.get_move_direction()
+	var direction = player.get_camera_space_direction()
 	
 	var speed := 0.0
 	if player.input.sprinting:
