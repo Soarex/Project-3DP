@@ -1,0 +1,60 @@
+[gd_resource type="VisualShader" load_steps=5 format=3 uid="uid://j77gsn6ljvqc"]
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_3cmgp"]
+input_name = "uv"
+
+[sub_resource type="VisualShaderNodeTexture" id="VisualShaderNodeTexture_fooe8"]
+output_port_for_preview = 0
+expanded_output_ports = [0]
+
+[sub_resource type="VisualShaderNodeColorParameter" id="VisualShaderNodeColorParameter_4htrq"]
+parameter_name = "ColorParameter"
+default_value_enabled = true
+
+[sub_resource type="VisualShaderNodeMix" id="VisualShaderNodeMix_jdv1k"]
+default_input_values = [0, Vector3(0, 0, 0), 1, Vector3(1, 1, 1), 2, Vector3(0.5, 0.5, 0.5)]
+op_type = 3
+
+[resource]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx;
+
+uniform vec4 ColorParameter : source_color = vec4(1.000000, 1.000000, 1.000000, 1.000000);
+uniform sampler2D tex_frg_3;
+
+
+
+void fragment() {
+// ColorParameter:4
+	vec4 n_out4p0 = ColorParameter;
+
+
+// Input:2
+	vec2 n_out2p0 = UV;
+
+
+// Texture2D:3
+	vec4 n_out3p0 = texture(tex_frg_3, n_out2p0);
+	float n_out3p4 = n_out3p0.a;
+
+
+// Mix:5
+	vec3 n_out5p0 = mix(vec3(n_out4p0.xyz), vec3(n_out3p0.xyz), vec3(n_out3p4));
+
+
+// Output:0
+	ALBEDO = n_out5p0;
+
+
+}
+"
+graph_offset = Vector2(-289, 40.8835)
+nodes/fragment/2/node = SubResource("VisualShaderNodeInput_3cmgp")
+nodes/fragment/2/position = Vector2(-460, 220)
+nodes/fragment/3/node = SubResource("VisualShaderNodeTexture_fooe8")
+nodes/fragment/3/position = Vector2(-120, 120)
+nodes/fragment/4/node = SubResource("VisualShaderNodeColorParameter_4htrq")
+nodes/fragment/4/position = Vector2(-180, 580)
+nodes/fragment/5/node = SubResource("VisualShaderNodeMix_jdv1k")
+nodes/fragment/5/position = Vector2(160, 280)
+nodes/fragment/connections = PackedInt32Array(2, 0, 3, 0, 5, 0, 0, 0, 3, 4, 5, 2, 4, 0, 5, 0, 3, 0, 5, 1)
